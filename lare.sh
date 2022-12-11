@@ -8,7 +8,7 @@ printf "\n**** Lame: Reduce Bitrate (LRB) v0.1.3 ****\n\n"
 printf " Disminuya el bitrate de sus archivos MP3. \n\n"
 printf " NOTA: \n"
 printf " * Asegurece de tener archivos MP3 \n   en este directorio.\n"
-printf " * Antes de convertir sus archivos \n   debe escoger la opcion (1). \n\n"
+printf " * Antes de convertir sus archivos \n   debe escoger la opcion (2). \n\n"
 
 opcion_a="Disminuir_el_bitrate"
 opcion_b="Chequear_archivos"
@@ -52,18 +52,20 @@ do
     read directorio
     printf "Bitrate de salida: "
     read bitrate
+    printf "\n"
     
     mkdir $directorio
     for files in ${ARCHIVOS[*]}
     do
       let conteo=conteo+1
       # EJECUTANDO lame (https://lame.sourceforge.io/index.php)
+      printf " Archivo ($conteo de $conteoTotal).\n\n"
       lame --mp3input -b $bitrate $files "$directorio/(new) $files"
-      printf "\n Archivo completados ($conteo de $conteoTotal).\n\n"
+      printf "\n ¡Operación completada!\n\n"
       wait
-      sleep 2
+      sleep 1
     done
-    printf "Listo..."
+    printf " ¡Listo!"
     exit
   fi
 done
