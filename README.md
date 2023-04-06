@@ -25,7 +25,7 @@ lare [DIRECTORIO]
 
 ### Nota
 
-> Este error se solucionó a partir de la versión **v0.1.7-B230404**
+> Este error se solucionó a partir de la versión **v0.1.6**
 
 Si experimentas un error al ejecutar el script puede que se deba a los espacios
 en blanco en el nombre de los archivos. Esto es debido a que los nombres de
