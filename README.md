@@ -13,17 +13,33 @@ MP3 desde la terminal.
 
 ## Requisitos
 
-Para que este script te funcione de forma correcta es necesario seguir los siguientes
-pasos:
+Para utilizar Lare, asegúrate de tener instalado [LAME MP3 Encoder](https://lame.sourceforge.io/).
 
-* Asegúrate de tener instalado [LAME MP3 Encoder](https://lame.sourceforge.io/).
-* Ejecuta el archivo `./wizard.sh` y sigue las instrucciones.
-* Escribe el comando ```lare``` e ingresa un directorio.
+## Instalación
+
+Siga estos pasos para instalar y configurar Lare:
+
+1. Clone este repositorio en su máquina local:
+
+```
+git clone https://github.com/usuario/Lare.git
+```
+
+2.  Ejecute el archivo `wizard.sh` para instalar Lare:
+
+```bash
+cd Lare
+./wizard.sh
+```
+
+3. Una vez que haya instalado Lare, puede ejecutar el script escribiendo el 
+siguiente comando y especificando un directorio:
+
 ```bash
 lare [DIRECTORIO]
 ```
 
-### Nota
+## Notas
 
 > Este error se solucionó a partir de la versión **v0.1.6**
 
@@ -34,9 +50,7 @@ archivo con espacios en blanco se interpretan como separadores de palabras.
 Por lo tanto, es importante que evites los espacios en blanco y los reemplaces
 con guiones (-) para asegurar que los archivos se puedan leer correctamente.
 
-## Próximas mejoras
+## Licencia
 
-- [x] Mejorar la experiencia de usuario.
-- [x] Corregir los errores que surgen al trabajar con archivos que tienen nombres
-que contienen espacios en blanco.
-- [ ] Permite la búsqueda de archivos MP3 dentro de los subdirectorios.
+Luatiny se encuentra bajo la licencia MIT. Consulte el archivo LICENSE para 
+obtener más información.
