@@ -1,80 +1,80 @@
-#! /bin/bash
+#!/bin/bash
 # MIT License Copyright (c) 2023 Hecdin Farias
 
-# Module setup ================================================================
+# Script setup ----------------------------------------------------------------
+
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# Global Variables
-C="\e[33m? \e[0m"
-W="  "
-SCRIPT_NAME="lare"
-PATH="/data/data/com.termux/files/usr/bin" # If you're using Termux, please use
-# ...this path as is. Only modify it if you are not using Termux
+# Script definition -----------------------------------------------------------
 
+co_bold="\e[1m"
+co_gray="\e[37m"
+co_red="\e[31m"
+co_yellow="\e[33m"
+end="\e[0m"
+icon="\e[33m? \e[0m"
+space="  "
 
-# Module config ===============================================================
+# Main variables
+main_directory="$HOME/.local/share"
+target_directory="$HOME/.local/share/lare"
+script_name="lare"
 
 # Installer
 function f_install_script() {
-  if [[ -f $PATH/$SCRIPT_NAME ]]; then
+  if [[ -d "$target_directory" ]]; then
     # Delete old files
-    echo -e "$C Eliminando los archivos de la previa instalación..."
-    echo -e "$W"
-    rm -r $PATH/$SCRIPT_NAME
+    echo -e "$icon$co_yellow Deleting old files from previous installation..."
+   rm -rf "$target_directory"
   fi
   # Copy files
-  echo -e "$C Instalación: Copiando los archivos en: $PATH"
-  ln -s $(pwd)/${SCRIPT_NAME}.sh $PATH/$SCRIPT_NAME
-  sleep 1s
-
-  echo -e "$C Operación terminada."
+  echo -e "$icon$co_gray Installing: Copying files to: $main_directory"
+  mkdir "$script_name"
+  mv "$script_name" "$main_directory"
+  cp "${script_name}.sh" "$target_directory"
+  ln -s "${target_directory}/${script_name}.sh" "${target_directory}/${script_name}"
+  echo -e "$icon$co_gray Operation completed!"
 }
 
 # Desinstaller
 function f_uninstall_script() {
-  if [[ -f $PATH/$SCRIPT_NAME ]]; then
+  if [[ -d "$target_directory" ]]; then
     # Delete files
-    echo -e "$C Desinstalación: Eliminando los archivos."
-    rm -r $PATH/$SCRIPT_NAME
+    echo -e "$icon$co_gray Uninstalling: Deleting files..."
+    rm -rf "$target_directory"
+    echo -e "$icon$co_gray Operation completed!"
   else
-    echo -e "$C $SCRIPT_NAME no instalado."
+    echo -e "$icon$co_red Luatiny not installed."
   fi
-  sleep 1s
-  echo -e "$C Operación terminada."
 }
 
-# Start script
+# Main script
 function f_main() {
-  echo -e "$W"
-  echo -e "$C **** Wizard: \e[4mLare\e[0m ****"
-  echo -e "$C"
-  echo -e "$C ¿Qué deseas hacer?"
-  echo -e "$C$W 1) Instalar script"
-  echo -e "$C$W 2) Desinstalar script"
-  echo -e "$C$W 3) Salir"
-  echo -e "$C"
-  echo -ne "$C respuesta: "
-  read -r OPTIONS
-  echo -e "$W"
+  echo -e "$space"
+  echo -e "$icon$co_bold **** Wizard ($script_name) **** $end"
+  echo -e "$icon"
+  echo -e "$icon$co_bold What do you want to do? $end"
+  echo -e "$icon$space$co_gray 1) Install script"
+  echo -e "$icon$space$co_gray 2) Uninstall script"
+  echo -e "$icon$space$co_gray 3) Exit"
+  echo -e "$icon"
+  echo -ne "$icon$co_gray Answer: "
+  read -r option
+  echo -e "$space"
 
-  if [[ "${OPTIONS}" == 1 ]]; then
+  if [[ "$option" == 1 ]]; then
     f_install_script
-  elif [[ "${OPTIONS}" == 2 ]]; then
+  elif [[ "$option" == 2 ]]; then
     f_uninstall_script
+  elif [[ "$option" == 3 ]]; then
+    echo -e "$icon$co_gray Exiting script..."
   else
-    echo -e "$C Operación cancelada."
+    echo -e "$icon$co_gray Invalid option."
   fi
-  echo -e "$W"
+  echo -e "$space"
   exit
 }
 
-# Check $PATH
-if [[ -d $PATH ]]; then
-  f_main
-else
-  echo -e "No esta usando Termux-Android"
-  echo -e "Debes editar este archivo y cambiar el PATH="
-  exit
-fi
+f_main

@@ -1,123 +1,168 @@
-#! /bin/bash
+#!/bin/bash
 # MIT License Copyright (c) 2023 Hecdin Farias
 
-# Module setup =======================================================================
+# Script setup ----------------------------------------------------------------
+
 set -o errexit
 set -o nounset
 set -o pipefail
 shopt -s globstar nullglob
 
-# Global variables
-C="\e[32m# \e[0m"
-W="  "
-IN_DIR=$1
-FILES_LIST=("$IN_DIR"/*.mp3)
-FILES_TOTAL=${#FILES_LIST[@]}
+# Script definition -----------------------------------------------------------
+
+co_gray="\e[37m"
+co_blue="\e[34m"
+co_bold="\e[1m"
+end="\e[0m"
+space="  "
 
 
-# Module config ===============================================================
+# Display help
+function f_show_help() {
+cat <<EOF
+
+  USAGE
+    lare [directory]
+
+  VARIABLES
+    directory : You can only write the name of a directory.
+              : If no directory is specified, the current directory will be selected.
+  FLAGS
+    -h --help    : Display help.
+    -v --version : Display version.
+
+EOF
+}
 
 # Replace empty characters with (-)
 function f_change_characters() {
-  for ELE in "${FILES_LIST[@]}"; do
-    if [[ "$ELE" == *" "* ]]; then
-      local NEWNAME="$(echo $ELE | sed 's/ /-/g')"
-      mv "$ELE" "$NEWNAME"
+  for elem in "${file_list[@]}"; do
+    if [[ "$elem" == *" "* ]]; then
+      local new_name=$(echo "$elem" | sed 's/ /-/g')
+      mv "$elem" "$new_name"
     fi
   done
 }
 
 # Find files in the directory
 function f_find_files() {
-  echo -e "$C Buscando archivos..."
-  echo -e "$W"
-  sleep 1s
+  echo -e "$space$co_gray Searching for files..."
+  echo -e "$space"
 
-  if [[ "$FILES_TOTAL" == "0" ]]; then
-    echo -e "$C No se han encontrado archivos *.mp3"
-    echo -e "$C Por favor, asegúrate de que que haya archivos en este directorio."
+  if [[ "$total_files" == 0 ]]; then
+    echo -e "$space$co_gray No *.mp3 file found."
+    echo -e "$space$co_yellow Please make sure there are files in this directory."
   else
-    for ELE in "${FILES_LIST[@]}"; do
-      echo -e "$W $ELE"
+    for elem in "${file_list[@]}"; do
+      echo -e "$space${co_blue}*$end $elem"
     done
-    echo -e "$W"
-    echo -e "$C En este directorio, hay $FILES_TOTAL archivos *.mp3"
-    echo -e "$C"
-    echo -e "$C ¿Es la cantidad esperada de archivos? (y/n)"
-    echo -ne "$C respuesta: "
-    read -r RES
+    echo -e "$space"
+    echo -e "$space$co_gray There are $total_files files (MP3) in this directory."
+    echo -e "$space"
+    echo -e "$space$co_bold Is the expected number of files? (y/n) $end"
+    echo -ne "$space$co_gray answer: "
+    read -r res
 
-    if [[ "$RES" == "y" ]]; then
+    if [[ "$res" == "y" ]]; then
       f_change_characters
       f_convert_bitrate
     else
-      echo -e "$W"
-      echo -e "$C Puede que el error se deba al uso de caracteres extraños en los nombre de los archivos."
-      echo -e "$C Reemplace estos caracteres para asegurarse de que los archivos se puedan leer correctamente."
+      echo -e "$space"
+      echo -e "$space$co_gray The error might be due to the use of special characters in the files name."
+      echo -e "$space$co_gray Replace these characters to ensure that the files can be properly read."
     fi
   fi
 }
 
 # Choise directory and change bitrate of the files
 function f_convert_bitrate() {
-  local LIST=("$IN_DIR"/*.mp3)
-  local COUNTER=0
+  local list=$file_list
+  local counter=0
 
-  echo -e "$W"
-  echo -e "$C Por favor, escriba el nombre del directorio donde deseas guardar los archivos."
-  echo -ne "$C respuesta: "
-  read -r NEW_DIR
+  echo -e "$space"
+  echo -e "$space$co_bold Please enter the name of the directory where you want to save the files. $end"
+  echo -ne "$space$co_gray answer: "
+  read -r new_directory
 
-  if [[ -d $NEW_DIR ]]; then
-    echo -e "$W"
-    echo -e "$C El directorio que has escrito ya existe. Elija otro."
+  if [[ -d "$new_directory" ]]; then
+    echo -e "$space"
+    echo -e "$space$co_gray The directory you entered already exists. Choose another one."
     f_convert_bitrate
   else
-    mkdir $NEW_DIR
+    mkdir "$new_directory"
   fi
+  echo -e "$space"
+  echo -e "$space$co_bold Specify the output bitrate you want to use (192 ~ 64). $end"
+  echo -ne "$space$co_gray answer: "
+  read -r new_bitrate
+  echo -e "$space"
 
-  echo -e "$C"
-  echo -e "$C Indique el bitrate de salida que deseas usar (192 / 128 / 112 / 96 / 64)."
-  echo -ne "$C respuesta: "
-  read -r NEW_BIT
-  echo -e "$W"
+  for elem in "${file_list[@]}"; do
+    local filename="${new_bitrate}Kbps $(basename $elem)"
 
-  for ELE in "${LIST[@]}"; do
-    (( COUNTER = COUNTER+1 ))
-    echo -e "$C Archivo: ${COUNTER}/${FILES_TOTAL}"
-    echo -e "$W"
-
-    # execute LAME (https://lame.sourceforge.io/index.php)
-    lame --mp3input -b "$NEW_BIT" "$ELE" "${NEW_DIR}/${NEW_BIT}Kbps $(basename $ELE)"
-    echo -e "$W"
+    (( counter += 1 ))
+    echo -e "$space$co_gray File:$co_blue $counter of $total_files $end"
+    echo -e "$space"
+    # Execute LAME
+    # (https://lame.sourceforge.io/index.php)
+    lame --mp3input -b "$new_bitrate" "$elem" "$filename"
     wait
-    sleep 1s
+    mv "$filename" "${new_directory}/"
+    echo -e "$space"
   done
-  echo -e "$C Operación terminada."
-  echo -e "$W"
-  exit
+  echo -e "$space$co_gray Operation completed!"
+}
+
+# Check if the dependencies are installed
+function f_check_dependencies() {
+  if ! [[ $(command -v lame) ]]; then
+    echo "LAME is not installed"
+    exit
+  fi
 }
 
 # Start script
 function f_main() {
-  echo -e "$W"
-  echo -e "$C **** Lare v0.1.6 ****"
-  echo -e "$C"
-  echo -e "$C ¿Qué deseas hacer?"
-  echo -e "$C$W 1) Reducir el bitrate de los archivos"
-  echo -e "$C$W 2) Salir del script"
-  echo -e "$C"
-  echo -ne "$C respuesta: "
-  read -r OPTIONS
-  echo -e "$W"
+  f_check_dependencies
 
-  if [[ "${OPTIONS}" == 1 ]]; then
+  echo -e "$space"
+  echo -e "$space$co_bold **** Lare **** $end"
+  echo -e "$space"
+  echo -e "$space$co_bold What do you want to do? $end"
+  echo -e "$space$co_gray 1) Reduce the bitrate of the files"
+  echo -e "$space$co_gray 2) Exit the script"
+  echo -e "$space"
+  echo -ne "$space$co_gray answer: "
+  read -r option
+  echo -e "$space"
+
+  if [[ "$option" == 1 ]]; then
     f_find_files
-  elif [[ "${OPTIONS}" == 2 ]]; then
-    echo -e "$C Operación cancelada."
+  elif [[ "$option" == 2 ]]; then
+    echo -e "$space$co_gray Script canceled."
   fi
-  echo -e "$W"
+  echo -e "$space"
   exit
 }
 
-f_main
+# Init
+if [[ $# -gt 1 ]]; then
+  echo "The script only accepts one parameter. (see --help)"
+  exit
+fi
+
+IN_OPTION=${1:-"."}
+
+case $IN_OPTION in
+  --help|-h)
+    f_show_help
+    ;;
+  --version|-v)
+    echo "v0.1.7"
+    ;;
+  *)
+    file_list=(${IN_OPTION}/*.mp3)
+    total_files=${#file_list[@]}
+    f_main
+    ;;
+esac
