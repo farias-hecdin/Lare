@@ -13,14 +13,16 @@ To use Lare, you need to have [LAME MP3 Encoder](https://lame.sourceforge.io/) i
 Follow these steps to install Lare:
 
 1. Clone this repository on your local machine:
-   ```sh
-   git clone https://github.com/farias-hecdin/Lare.git
-   ```
+    ```sh
+    git clone https://github.com/farias-hecdin/Lare.git
+    ```
+
 2. Add this code snippet to your `.zshrc` or `.bashrc` file to be able to execute Lare from any directory.
-   ```sh
-   # Lare
-   export LARE_HOME="$HOME/.local/share/lare:$PATH"
-   ```
+    ```sh
+    # Lare
+    export LARE_HOME="$HOME/.local/share/lare"
+    export PATH="$LARE_HOME:$PATH"
+    ```
 
 3. Run the `wizard.sh` file to install Lare:
     ```sh

@@ -13,6 +13,7 @@ shopt -s globstar nullglob
 co_gray="\e[37m"
 co_blue="\e[34m"
 co_bold="\e[1m"
+co_yellow="\e[33m"
 end="\e[0m"
 space="  "
 
@@ -49,8 +50,8 @@ function f_find_files() {
   echo -e "$space$co_gray Searching for files... \n"
 
   if [[ "$total_files" == 0 ]]; then
-    echo -e "$space$co_gray No *.mp3 file found."
-    echo -e "$space$co_yellow Please make sure there are files in this directory."
+    echo -e "$space$co_yellow No *.mp3 file found."
+    echo -e "$space$co_yellow Please make sure there are files in this directory. \n"
   else
     for elem in "${file_list[@]}"; do
       echo -e "$space${co_blue}* $end$elem"
@@ -67,7 +68,7 @@ function f_find_files() {
       f_convert_bitrate
     else
       echo -e "$space$co_gray The error might be due to the use of special characters in the files name."
-      echo -e "$space$co_gray Replace these characters to ensure that the files can be properly read."
+      echo -e "$space$co_gray Replace these characters to ensure that the files can be properly read. \n"
     fi
   fi
 }
@@ -87,23 +88,15 @@ function f_convert_bitrate() {
       echo -e "$space$co_gray The directory you entered already exists. Choose another one. \n"
      _new_directory
     else
-      mkdir "$new_directory"
+      mkdir "${in_directory}/$new_directory"
     fi
   }
   _new_directory
 
-  function _new_bitrate() {
-    echo -e "$space$co_bold Specify the output bitrate you want to use (192 ~ 64). $end"
-    echo -ne "$space$co_gray answer: "
-    read -r new_bitrate
-    echo -e "$space"
-
-    if [[ "$new_bitrate" -gt 320 ]]; then
-      echo -e "$space$co_gray Invalid bitrate. \n"
-      _new_bitrate
-    fi
-  }
-  _new_bitrate
+  echo -e "$space$co_bold Specify the output bitrate you want to use (192 ~ 64). $end"
+  echo -ne "$space$co_gray answer: "
+  read -r new_bitrate
+  echo -e "$space"
 
   for elem in "${file_list[@]}"; do
     local filename="${new_bitrate}kbps $(basename $elem)"
@@ -114,7 +107,7 @@ function f_convert_bitrate() {
     # (https://lame.sourceforge.io/index.php)
     lame --mp3input -b "$new_bitrate" "$elem" "$filename"
     wait
-    mv "$filename" "$new_directory"
+    mv "$filename" "${in_directory}/$new_directory"
     echo -e "$space"
   done
   echo -e "$space$co_gray Operation completed! \n"
@@ -167,6 +160,7 @@ case $IN_OPTION in
     echo "v0.1.7"
     ;;
   *)
+    in_directory=$IN_OPTION
     file_list=(${IN_OPTION}/*.mp3)
     total_files=${#file_list[@]}
     f_main

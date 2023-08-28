@@ -26,7 +26,7 @@ script_name="lare"
 function f_install_script() {
   if [[ -d "$target_directory" ]]; then
     # Delete old files
-    echo -e "$icon$co_yellow Deleting old files from previous installation..."
+    echo -e "$icon$co_yellow Deleting old files from previous installation... \n"
    rm -rf "$target_directory"
   fi
   # Copy files
@@ -46,7 +46,7 @@ function f_uninstall_script() {
     rm -rf "$target_directory"
     echo -e "$icon$co_gray Operation completed!"
   else
-    echo -e "$icon$co_red Luatiny not installed."
+    echo -e "$icon$co_red $script_name not installed."
   fi
 }
 
