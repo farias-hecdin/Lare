@@ -1,47 +1,47 @@
 # Lare
-Reduce el bitrate de tus archivos MP3 desde la terminal.
+Reduce the bitrate of your MP3 files from the terminal.
 
-## Descripción
-Lare es un script de Bash pequeño y útil diseñado para trabajar con **LAME MP3 Encoder**. El objetivo principal de este script es automatizar la reducción del bitrate de un lote de archivos MP3 a través de la terminal.
+## Description
+Lare is a small and useful Bash script designed to work with **LAME MP3 Encoder**. The main goal of this script is to automate the bitrate reduction of a batch of MP3 files through the terminal.
 
-> Creé este script con la intención de reducir el bitrate de los archivos MP3 en mi teléfono, con el objetivo de optimizar el espacio de almacenamiento y poder guardar más canciones.
+> I created this script with the intention of reducing the bitrate of MP3 files on my phone, in order to optimize storage space and be able to save more songs.
 
-## Requisitos
-Para utilizar Lare, debes asegúrate de tener instalado [LAME MP3 Encoder](https://lame.sourceforge.io/).
+## Requirements
+To use Lare, you need to have [LAME MP3 Encoder](https://lame.sourceforge.io/) installed.
 
-## Instalación
-Sigue estos pasos para instalar Lare:
+## Installation
+Follow these steps to install Lare:
 
-1. Clone este repositorio en su máquina local:
+1. Clone this repository on your local machine:
    ```sh
-   git clone https://github.com/usuario/Lare.git
+   git clone https://github.com/farias-hecdin/Lare.git
    ```
-2. Añade este fragmento de codigo en tu archivo `.zshrc` o `bashrc` para poder ejecutar Lare desde cualquier directorio.
+2. Add this code snippet to your `.zshrc` or `.bashrc` file to be able to execute Lare from any directory.
    ```sh
    # Lare
    export LARE_HOME="$HOME/.local/share/lare:$PATH"
    ```
 
-3.  Ejecute el archivo `wizard.sh` para instalar Lare:
+3. Run the `wizard.sh` file to install Lare:
     ```sh
     cd Lare/
     bash wizard.sh
     ```
 
-4. Una vez que haya instalado Lare, puede ejecutar el script escribiendo el siguiente comando y especificando un directorio:
+4. Once you have installed Lare, you can run the script by writing the following command and specifying a directory:
     ```sh
-    lare [directorio]
+    lare [directory]
     ```
 
-Para mostrar el texto de ayuda, puedes utilizar el comando `lare --help`.
+To display the help text, you can use the `lare --help` command.
 
-## Notas
+## Notes
 
-> Este error se solucionó a partir de la versión **v0.1.6**
+> This error was fixed starting from version **v0.1.6**
 
-Si experimentas un error al ejecutar el script puede que se deba a los espacios en blanco en el nombre de los archivos. Esto es debido a que los nombres de archivo con espacios en blanco se interpretan como separadores de palabras.
-Por lo tanto, es importante que evites los espacios en blanco y los reemplaces con guiones (-) para asegurar que los archivos se puedan leer correctamente.
+If you experience an error when running the script, it may be due to spaces in the file names. This is because file names with spaces are interpreted as word separators.
+Therefore, it is important to avoid spaces and replace them with hyphens (-) to ensure that the files can be properly read.
 
-## Licencia
+## License
 
-Lare se encuentra bajo la licencia MIT. Consulte el archivo LICENSE para obtener más información.
+Lare is under the MIT license. Please see the `LICENSE` file for more information.

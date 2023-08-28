@@ -46,28 +46,26 @@ function f_change_characters() {
 
 # Find files in the directory
 function f_find_files() {
-  echo -e "$space$co_gray Searching for files..."
-  echo -e "$space"
+  echo -e "$space$co_gray Searching for files... \n"
 
   if [[ "$total_files" == 0 ]]; then
     echo -e "$space$co_gray No *.mp3 file found."
     echo -e "$space$co_yellow Please make sure there are files in this directory."
   else
     for elem in "${file_list[@]}"; do
-      echo -e "$space${co_blue}*$end $elem"
+      echo -e "$space${co_blue}* $end$elem"
     done
     echo -e "$space"
-    echo -e "$space$co_gray There are $total_files files (MP3) in this directory."
-    echo -e "$space"
+    echo -e "$space$co_gray There are $total_files files (MP3) in this directory. \n"
     echo -e "$space$co_bold Is the expected number of files? (y/n) $end"
     echo -ne "$space$co_gray answer: "
     read -r res
+    echo -e "$space"
 
     if [[ "$res" == "y" ]]; then
       f_change_characters
       f_convert_bitrate
     else
-      echo -e "$space"
       echo -e "$space$co_gray The error might be due to the use of special characters in the files name."
       echo -e "$space$co_gray Replace these characters to ensure that the files can be properly read."
     fi
@@ -79,38 +77,47 @@ function f_convert_bitrate() {
   local list=$file_list
   local counter=0
 
-  echo -e "$space"
-  echo -e "$space$co_bold Please enter the name of the directory where you want to save the files. $end"
-  echo -ne "$space$co_gray answer: "
-  read -r new_directory
-
-  if [[ -d "$new_directory" ]]; then
+  function _new_directory() {
+    echo -e "$space$co_bold Please enter the name of the directory where you want to save the files. $end"
+    echo -ne "$space$co_gray answer: "
+    read -r new_directory
     echo -e "$space"
-    echo -e "$space$co_gray The directory you entered already exists. Choose another one."
-    f_convert_bitrate
-  else
-    mkdir "$new_directory"
-  fi
-  echo -e "$space"
-  echo -e "$space$co_bold Specify the output bitrate you want to use (192 ~ 64). $end"
-  echo -ne "$space$co_gray answer: "
-  read -r new_bitrate
-  echo -e "$space"
+
+    if [[ -d "$new_directory" ]]; then
+      echo -e "$space$co_gray The directory you entered already exists. Choose another one. \n"
+     _new_directory
+    else
+      mkdir "$new_directory"
+    fi
+  }
+  _new_directory
+
+  function _new_bitrate() {
+    echo -e "$space$co_bold Specify the output bitrate you want to use (192 ~ 64). $end"
+    echo -ne "$space$co_gray answer: "
+    read -r new_bitrate
+    echo -e "$space"
+
+    if [[ "$new_bitrate" -gt 320 ]]; then
+      echo -e "$space$co_gray Invalid bitrate. \n"
+      _new_bitrate
+    fi
+  }
+  _new_bitrate
 
   for elem in "${file_list[@]}"; do
-    local filename="${new_bitrate}Kbps $(basename $elem)"
+    local filename="${new_bitrate}kbps $(basename $elem)"
 
     (( counter += 1 ))
-    echo -e "$space$co_gray File:$co_blue $counter of $total_files $end"
-    echo -e "$space"
+    echo -e "$space$co_gray File: $co_blue$counter of $total_files $end\n"
     # Execute LAME
     # (https://lame.sourceforge.io/index.php)
     lame --mp3input -b "$new_bitrate" "$elem" "$filename"
     wait
-    mv "$filename" "${new_directory}/"
+    mv "$filename" "$new_directory"
     echo -e "$space"
   done
-  echo -e "$space$co_gray Operation completed!"
+  echo -e "$space$co_gray Operation completed! \n"
 }
 
 # Check if the dependencies are installed
@@ -139,9 +146,8 @@ function f_main() {
   if [[ "$option" == 1 ]]; then
     f_find_files
   elif [[ "$option" == 2 ]]; then
-    echo -e "$space$co_gray Script canceled."
+    echo -e "$space$co_gray Script canceled. \n"
   fi
-  echo -e "$space"
   exit
 }
 
