@@ -17,6 +17,9 @@ co_yellow="\e[33m"
 end="\e[0m"
 space="  "
 
+# Main variables
+file_list=()
+
 
 # Display help
 function f_show_help() {
@@ -75,7 +78,7 @@ function f_find_files() {
 
 # Choise directory and change bitrate of the files
 function f_convert_bitrate() {
-  local list=$file_list
+  local file_list=(${IN_OPTION}/*.mp3)
   local counter=0
 
   function _new_directory() {
@@ -166,3 +169,4 @@ case $IN_OPTION in
     f_main
     ;;
 esac
+
